@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🧩 Customer Categorizer
+#  Customer Categorizer
 
 **End-to-end Machine Learning pipeline to categorize customers using demographic and transaction data.**
 
@@ -16,11 +16,11 @@ Dynamic cluster prediction · FastAPI endpoints · MLOps tracking · Docker depl
 
 ---
 
-## 📌 Overview
+##  Overview
 
 Customer Categorizer groups customers into meaningful segments using their **demographic** and **transaction** data. Instead of hard-coding the number of segments, the pipeline supports **dynamic cluster prediction**, and the trained model is exposed through **FastAPI** endpoints so any application can request a customer's category in real time.
 
-The project follows an MLOps-style structure: modular source code, config-driven runs, experiment tracking, a Docker image for reproducible deployment, and a GitHub Actions workflow for CI.
+The project follows an MLOps-style structure: modular pipeline components, config-driven runs, experiment tracking, a Docker image for reproducible deployment, and a GitHub Actions workflow for CI.
 
 **Typical use cases (BFSI / Fintech / Retail):**
 - Customer segmentation for targeted marketing
@@ -30,50 +30,91 @@ The project follows an MLOps-style structure: modular source code, config-driven
 
 ---
 
-## 🔄 Project Flowchart
+##  Key Features
 
-![Customer Categorizer Flowchart](flowchart/flowchart.png)
-
-> 📝 **Note:** Make sure the image path above matches the actual file name inside the `flowchart/` folder (for example `flowchart/pipeline.png`).
-
-<details>
-<summary><b>Text version of the flow (Mermaid)</b></summary>
-
-```mermaid
-flowchart TD
-    A[Raw Data<br/>Demographic + Transaction] --> B[Data Ingestion]
-    B --> C[Data Cleaning &<br/>Missing Value Handling]
-    C --> D[Feature Engineering &<br/>Encoding / Scaling]
-    D --> E[Clustering Model Training]
-    E --> F[Dynamic Cluster Selection]
-    F --> G[Evaluation &<br/>Experiment Tracking]
-    G --> H[Saved Model & Artifacts]
-    H --> I[FastAPI Service<br/>app.py]
-    I --> J[Web UI / API Client]
-    J --> K[Predicted Customer Category]
-    H --> L[Docker Image]
-    L --> M[Deployment]
-    N[GitHub Actions CI] -.-> L
-```
-
-</details>
-
----
-
-## ✨ Key Features
-
-- **End-to-end ML pipeline**: ingestion → preprocessing → feature engineering → training → prediction
+- **End-to-end ML pipeline**: ingestion → validation → transformation → training → evaluation → pushing
+- **Separate training and prediction pipelines**
 - **Dynamic cluster prediction**: number of customer segments is not fixed blindly
 - **FastAPI endpoints**: serve predictions through a REST API
 - **Web interface**: simple HTML templates with CSS for manual predictions
 - **MLOps tracking**: experiments, parameters and metrics are logged
+- **Model evaluation gate**: a new model is pushed only after it is evaluated
 - **Dockerised**: one-command build and run
 - **CI workflow**: automated checks through GitHub Actions
-- **Config-driven**: parameters live in the `config/` folder, not buried in code
 
 ---
 
-## 🗂️ Project Structure
+##  Pipeline Architecture
+
+The project is split into two main pipelines: a **Training Pipeline** that builds and publishes the model, and a **Prediction Pipeline** that uses the published model to categorize new customers.
+
+###  Training Pipeline
+
+<p align="center">
+  <img src="flowchart/training%20pipeline.png" alt="Training Pipeline Flowchart" width="900">
+</p>
+
+###  Prediction Pipeline
+
+<p align="center">
+  <img src="flowchart/prediction%20pipeline.png" alt="Prediction Pipeline Flowchart" width="900">
+</p>
+
+---
+
+##  Pipeline Components (Stage by Stage)
+
+### 1️ Data Ingestion
+
+Loads the raw demographic and transaction data from the source, and stores it as ingested artifacts (train / test data) for the next stages.
+
+<p align="center">
+  <img src="flowchart/Data%20Ingestion.png" alt="Data Ingestion Flowchart" width="800">
+</p>
+
+### 2️ Data Validation
+
+Checks that the ingested data is usable: expected columns and schema, data types, missing values, and overall data quality, before it moves ahead.
+
+<p align="center">
+  <img src="flowchart/data%20validation.png" alt="Data Validation Flowchart" width="800">
+</p>
+
+### 3️ Data Transformation
+
+Cleans and prepares the validated data: handles missing values, encodes categorical features, scales numerical features, and saves the preprocessing object so the same transformation is reused at prediction time.
+
+<p align="center">
+  <img src="flowchart/data%20transformation.png" alt="Data Transformation Flowchart" width="800">
+</p>
+
+### 4️ Model Trainer
+
+Trains the clustering model on the transformed data, using dynamic cluster selection to decide the number of customer segments, and saves the trained model.
+
+<p align="center">
+  <img src="flowchart/model%20trainer.png" alt="Model Trainer Flowchart" width="800">
+</p>
+
+### 5️ Model Evaluation
+
+Evaluates the newly trained model and compares it with the currently deployed model, so that only a model that performs well enough moves forward.
+
+<p align="center">
+  <img src="flowchart/Model%20Evaluation.png" alt="Model Evaluation Flowchart" width="800">
+</p>
+
+### 6️ Model Pusher
+
+Pushes the accepted model to its deployment location so the prediction pipeline and API always use the latest approved version.
+
+<p align="center">
+  <img src="flowchart/Model%20Pusher.png" alt="Model Pusher Flowchart" width="800">
+</p>
+
+---
+
+##  Project Structure
 
 ```
 Customer-Categorizer/
@@ -81,7 +122,7 @@ Customer-Categorizer/
 ├── assignment/          # Problem statement / assignment files
 ├── config/              # Configuration files
 ├── docs/                # Additional documentation
-├── flowchart/           # Pipeline flowchart image(s)
+├── flowchart/           # Pipeline flowchart images
 ├── notebooks/           # EDA and experimentation notebooks
 ├── scripts/             # Helper / pipeline run scripts
 ├── src/                 # Core source code (pipeline components)
@@ -98,7 +139,7 @@ Customer-Categorizer/
 
 ---
 
-## 🛠️ Tech Stack
+##  Tech Stack
 
 | Area | Tools |
 |------|-------|
@@ -112,7 +153,7 @@ Customer-Categorizer/
 
 ---
 
-## 🚀 Getting Started
+##  Getting Started
 
 ### 1. Clone the repository
 
@@ -151,7 +192,7 @@ Interactive API docs (Swagger UI): **http://127.0.0.1:8000/docs**
 
 ---
 
-## 🐳 Run with Docker
+##  Run with Docker
 
 ```bash
 # Build the image
@@ -165,7 +206,7 @@ Then open **http://localhost:8000**.
 
 ---
 
-## 🔌 API Usage
+##  API Usage
 
 Open `/docs` after starting the server to see every available endpoint and try them live.
 
@@ -191,30 +232,17 @@ curl -X POST "http://127.0.0.1:8000/predict" \
 }
 ```
 
-> 📝 Endpoint names and input fields above are examples. Update them to match `app.py` and the trained model's features.
+>  Endpoint names and input fields above are examples. Update them to match `app.py` and the trained model's features.
 
 ---
 
-## 📊 Pipeline Stages
-
-1. **Data Ingestion**: load demographic and transaction data
-2. **Data Cleaning**: handle missing values, duplicates and outliers
-3. **Feature Engineering**: encode categorical variables, scale numerical features
-4. **Model Training**: train clustering model(s) to group similar customers
-5. **Dynamic Cluster Selection**: pick a suitable number of clusters from evaluation metrics
-6. **Evaluation & Tracking**: log parameters, metrics and artifacts for every run
-7. **Serving**: expose the final model through FastAPI
-8. **Deployment**: package with Docker, validate with GitHub Actions
-
----
-
-## 🔁 CI/CD
+##  CI/CD
 
 A GitHub Actions workflow in `.github/workflows/` runs automatically on push / pull request to keep the project healthy and the Docker build reproducible.
 
 ---
 
-## 🧭 Roadmap
+##  Roadmap
 
 - [ ] Add model monitoring and drift detection
 - [ ] Add unit tests for pipeline components
@@ -224,7 +252,7 @@ A GitHub Actions workflow in `.github/workflows/` runs automatically on push / p
 
 ---
 
-## 🤝 Contributing
+##  Contributing
 
 Contributions, issues and feature requests are welcome. Feel free to open an issue or submit a pull request.
 
@@ -236,7 +264,7 @@ Contributions, issues and feature requests are welcome. Feel free to open an iss
 
 ---
 
-## 👤 Author
+##  Author
 
 **Ahmed Raza Khan**
 - GitHub: [github.com/ahmedrajakhan](https://github.com/ahmedrajakhan)
